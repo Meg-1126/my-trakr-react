@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 
 export default function Category(props) {
   const [categoryName, setCategoryName] = useState('');
@@ -10,6 +11,13 @@ export default function Category(props) {
     };
     const newCategories = [...categories, newCategory];
     setCategories(newCategories);
+    axios
+      .post('/categories', {newCategory})
+      .then((res) => {
+        console.log('res', res);
+        setCategories([...categories, {...res.data.name}]);
+      })
+      .catch((err) => console.log('err', err));
   };
   return (
     <div>

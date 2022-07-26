@@ -6,28 +6,20 @@ import axios from 'axios';
 export default function Main() {
   const [accounts, setAccounts] = useState([]);
   const [transactions, setTransactions] = useState([]);
-  // run useEffect every time the component re-render
-  // useEffect(() => {
-  //   axios.get('https://my-trakr-api.herokuapp.com/accounts').then((res) => {
-  //     console.log('res', res.data);
-  //     setAccounts(res.data);
-  //   });
-  // });
-
-  // run useEffect once, when the page is first loaded
   useEffect(() => {
-    axios.get('/accounts').then((res) => {
-      console.log('res', res.data);
-      setAccounts(res.data);
+    //get request
+    axios.get('/accounts').then((response) => {
+      console.log('get acc response', response.data);
+      setAccounts([...response.data]);
     });
   }, []);
-  // run useEffect only when transactions state is changed
-  // useEffect(() => {
-  //   axios.get('https://my-trakr-api.herokuapp.com/accounts').then((res) => {
-  //     console.log('res', res.data);
-  //     setAccounts(res.data);
-  //   });
-  // }, [transactions]);
+  useEffect(() => {
+    //get request
+    axios.get('/transactions').then((response) => {
+      console.log('get transactions response', response.data);
+      setTransactions([...response.data]);
+    });
+  }, []);
   return (
     <main>
       <Account accounts={accounts} setAccounts={setAccounts} />

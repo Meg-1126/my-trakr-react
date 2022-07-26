@@ -1,11 +1,10 @@
+import axios from 'axios';
 import React, { useState } from 'react';
 import Category from './Category';
 // import axios from 'axios';
 
 export default function Transaction(props) {
-  // const accounts = props.accounts
-  // const setTransactions = props.setTransactions
-  // const transactions = props.transactions
+  const { setTransactions, transactions } = props;
   const [formData, setFormData] = useState({
     id: 0,
     type: '',
@@ -15,25 +14,38 @@ export default function Transaction(props) {
     accountIdFrom: 0,
     accountIdTo: 0,
   });
-  const { accounts, transactions, setTransactions } = props;
-  const accountsOptions = accounts.map((account) => (
-    <option value={account.id} key={account.id}>
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    console.log('submitted form transaction');
+    axios
+      .post('/transaction', { newTransaction: formData })
+      .then((response) => {
+        setTransactions([...transactions, response.data]);
+      });
+  };
+  const handleChange = (event) => {
+    const name = event.target.name;
+    let value;
+    if (
+      name === 'accountId' ||
+      name === 'accountIdFrom' ||
+      name === 'accountIdTo' ||
+      name === 'amount'
+    ) {
+      value = Number(event.target.value);
+    } else {
+      value = event.target.value;
+    }
+    const newFormData = { ...formData, [name]: value };
+    console.log('newFormData', newFormData);
+    setFormData(newFormData);
+  };
+
+  const accountsOptions = props.accounts.map((account) => (
+    <option key={account.id} value={account.id}>
       {account.name}
     </option>
   ));
-  const handleChange = (event) => {
-    const name = event.target.name;
-    const value = event.target.value;
-    const newFormData = { ...formData, [name]: value };
-    setFormData(newFormData);
-  };
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const newFormData = { ...formData, id: transactions.length + 1 };
-    const newTransactions = [...transactions, newFormData];
-    setTransactions(newTransactions);
-  };
-
   return (
     <section>
       <h2>New Transaction Form</h2>
@@ -45,7 +57,7 @@ export default function Transaction(props) {
         </div>
         <div>
           <label htmlFor='accountId'>Account: </label>
-          <select name='accountId' onChange={handleChange} defaultValue=''>
+          <select name='accountId' defaultValue='' onChange={handleChange}>
             <option value={''} disabled>
               Select an account
             </option>
@@ -54,7 +66,7 @@ export default function Transaction(props) {
         </div>
         <div>
           <label htmlFor='accountIdFrom'>From:</label>
-          <select name='accountIdFrom' onChange={handleChange}>
+          <select name='accountIdFrom' defaultValue='' onChange={handleChange}>
             <option value={''} disabled>
               Select an account
             </option>
@@ -63,7 +75,7 @@ export default function Transaction(props) {
         </div>
         <div>
           <label htmlFor='accountIdTo'>To:</label>
-          <select name='accountIdTo' onChange={handleChange}>
+          <select name='accountIdTo' defaultValue='' onChange={handleChange}>
             <option value={''} disabled>
               Select an account
             </option>
@@ -77,7 +89,7 @@ export default function Transaction(props) {
         </div>
         <div>
           <label htmlFor='amount'>Amount:</label>
-          <input type='number' name='amount' onChange={handleChange} />
+          <input type='number' name='amount' onChange={handleChange} required />
         </div>
         <button>Add Transaction</button>
       </form>
